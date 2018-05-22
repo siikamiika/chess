@@ -13,40 +13,14 @@ class Board(object):
     def move(self, piece, position):
         """Check if the move is valid and move a piece to a position. If the
         position was already occupied by the opponent, return the captured piece."""
-        if not self._valid_move(position):
+        if not is_position(position):
             raise IllegalMove(f"'{position}' doesn't look like a valid position")
         target_square = self.grid[position]
         if target_square.piece and target_square.piece.color == piece.color:
             raise IllegalMove(f"{position} is already occupied by you")
 
-        try:
-            old_position = piece.position
-            # move the piece and check if another piece was captured
-            captured = piece.move(position)
-            if piece.promoted_piece:
-                piece = piece.promoted_piece
-                self.game.pieces[piece.piece_id] = piece
-            if captured:
-                self.grid[captured.position].piece = None
-                self.game.captured[captured.color].append(captured)
-            self.grid[old_position].piece = None
-            self.grid[position].piece = piece
-            # the move was successful, add it to the game moves
-            self.game.moves.append(dict(
-                move_from=old_position,
-                move_to=position,
-                piece=piece,
-                move_id=len(self.game.moves),
-                captured=captured,
-                check=False, # TODO
-                mate=False, # TODO
-            ))
-            return captured # can be None
-        except IllegalMove as ex:
-            raise ex
-
-    def _valid_move(self, position):
-        return is_position(position)
+        captured = piece.move(position)
+        return captured
 
     def __str__(self):
         files_text = [f' {c} ' for c in chain(' ', char_range('a', 'h'), ' ')]

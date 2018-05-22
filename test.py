@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """Testing"""
 import time
-from chess import Chess
+from chess import Chess, Player
 from chess.exceptions import IllegalMove
 from chess.piece import Queen
+from chess.colors import COLOR
 
 def move(piece, position, capture=False, must_fail=False):
     captured = None
     try:
-        captured = piece.game.board.move(piece, position)
+        piece.game.turn = piece.color # force turn
+        captured = piece.game.move(piece, position)
         if must_fail:
             assert False
     except IllegalMove as ex:
@@ -113,6 +115,12 @@ def test_promoted_queen(game):
 
 def main():
     game = Chess()
+    player1 = Player(COLOR.white)
+    player2 = Player(COLOR.black)
+    game.add_player(player1)
+    game.add_player(player2)
+    game.start()
+
     test_pawn(game)
     test_rook(game)
     test_bishop(game)
