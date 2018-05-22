@@ -41,3 +41,20 @@ def char_range(c1, c2):
         step = -1
     for charcode in range(start, end + step, step):
         yield chr(charcode)
+
+ANSI_PATTERN = re.compile(r'\x1b\[[0-9;]*m')
+def pad_ansi(text, width, char, left=False):
+    """Pad text with character, treating ANSI escape sequences as zero width"""
+    current_width = len(ANSI_PATTERN.sub('', text))
+    parts = [text, (width - current_width) * char]
+    if left:
+        parts = reversed(parts)
+    return ''.join(parts)
+
+def rpad_ansi(text, width, char):
+    """pad_ansi with left=False"""
+    return pad_ansi(text, width, char, left=False)
+
+def lpad_ansi(text, width, char):
+    """pad_ansi with left=True"""
+    return pad_ansi(text, width, char, left=True)

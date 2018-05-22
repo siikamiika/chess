@@ -11,7 +11,7 @@ from .piece import (
 )
 from .colors import COLOR, BG2, RESET_STYLE, FG_WHITE, FG_BLACK
 from .exceptions import PlayerExists
-from .helpers import char_range
+from .helpers import char_range, rpad_ansi
 
 class Chess(object):
     """The game"""
@@ -85,25 +85,18 @@ class Chess(object):
         for i, log_data in enumerate(self.moves[-len(rows):]):
             log_text = []
 
-            length = 0
             if isinstance(log_data['piece'], Pawn):
                 log_text.append(FG_WHITE if log_data['piece'].color == COLOR.white else FG_BLACK)
                 if log_data['captured']:
                     log_text.append(log_data['move_from'][0] + 'x')
-                    length += 2
             else:
                 log_text.append(str(log_data['piece']))
-                length += 1
                 if log_data['captured']:
                     log_text.append('x')
-                    length += 1
 
             log_text.append(log_data['move_to'])
-            length += 2
 
-            log_text.append((7 - length) * ' ')
-
-            log[i][1] = ''.join(log_text)
+            log[i][1] = rpad_ansi(''.join(log_text), 7, ' ')
 
         # chessboard and captured pieces on the left, list of moves on the right
         log_rows = [''.join(l) for l in log]
