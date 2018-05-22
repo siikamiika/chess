@@ -40,8 +40,8 @@ class Pawn(Piece):
                     # while moving 1 forward
                     (rank_delta == 1 if self.color == COLOR.white else rank_delta == -1)
                 ):
-                square = self.game.board.grid[position]
-                if square.piece:
+                piece = self._move_parallel(position)
+                if piece:
                     raise IllegalMove(f'There is a piece at {position}')
             else:
                 raise IllegalMove((self.position, position))
