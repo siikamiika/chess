@@ -47,7 +47,7 @@ class Piece(object):
             if captured: # a piece would have been captured on the previous iteration
                 raise IllegalMove(f'There is a piece at {captured.position}')
             intermediate_pos = file + rank
-            square = self.game.board.grid[intermediate_pos]
+            square = self.game.board[intermediate_pos]
             if square.piece:
                 if square.piece.color != self.color:
                     captured = square.piece
@@ -70,7 +70,7 @@ class Piece(object):
             if captured: # a piece would have been captured on the previous iteration
                 raise IllegalMove(f'There is a piece at {captured.position}')
             intermediate_pos = file + rank
-            square = self.game.board.grid[intermediate_pos]
+            square = self.game.board[intermediate_pos]
             if square.piece:
                 if square.piece.color != self.color:
                     captured = square.piece

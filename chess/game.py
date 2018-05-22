@@ -74,11 +74,11 @@ class Chess(object):
             self.pieces[piece.piece_id] = piece
         if captured:
             # remove captured piece from chessboard and add it to captured pieces
-            self.board.grid[captured.position].piece = None
+            self.board[captured.position].piece = None
             self.captured[captured.color].append(captured)
         # finally move the piece on the chessboard
-        self.board.grid[old_position].piece = None
-        self.board.grid[position].piece = piece
+        self.board[old_position].piece = None
+        self.board[position].piece = piece
         # the move was successful, add it to the game moves
         self._log_move(old_position, position, piece, captured)
         # change turn
@@ -98,30 +98,30 @@ class Chess(object):
 
     def _generate_pieces(self):
         # black
-        self.board.grid['a8'].piece = Rook(COLOR.black)
-        self.board.grid['b8'].piece = Knight(COLOR.black)
-        self.board.grid['c8'].piece = Bishop(COLOR.black)
-        self.board.grid['d8'].piece = Queen(COLOR.black)
-        self.board.grid['e8'].piece = King(COLOR.black)
-        self.board.grid['f8'].piece = Bishop(COLOR.black)
-        self.board.grid['g8'].piece = Knight(COLOR.black)
-        self.board.grid['h8'].piece = Rook(COLOR.black)
+        self.board['a8'].piece = Rook(COLOR.black)
+        self.board['b8'].piece = Knight(COLOR.black)
+        self.board['c8'].piece = Bishop(COLOR.black)
+        self.board['d8'].piece = Queen(COLOR.black)
+        self.board['e8'].piece = King(COLOR.black)
+        self.board['f8'].piece = Bishop(COLOR.black)
+        self.board['g8'].piece = Knight(COLOR.black)
+        self.board['h8'].piece = Rook(COLOR.black)
         for file in char_range('a', 'h'):
-            self.board.grid[f'{file}7'].piece = Pawn(COLOR.black)
+            self.board[f'{file}7'].piece = Pawn(COLOR.black)
 
         # white
         for file in char_range('a', 'h'):
-            self.board.grid[f'{file}2'].piece = Pawn(COLOR.white)
-        self.board.grid['a1'].piece = Rook(COLOR.white)
-        self.board.grid['b1'].piece = Knight(COLOR.white)
-        self.board.grid['c1'].piece = Bishop(COLOR.white)
-        self.board.grid['d1'].piece = Queen(COLOR.white)
-        self.board.grid['e1'].piece = King(COLOR.white)
-        self.board.grid['f1'].piece = Bishop(COLOR.white)
-        self.board.grid['g1'].piece = Knight(COLOR.white)
-        self.board.grid['h1'].piece = Rook(COLOR.white)
+            self.board[f'{file}2'].piece = Pawn(COLOR.white)
+        self.board['a1'].piece = Rook(COLOR.white)
+        self.board['b1'].piece = Knight(COLOR.white)
+        self.board['c1'].piece = Bishop(COLOR.white)
+        self.board['d1'].piece = Queen(COLOR.white)
+        self.board['e1'].piece = King(COLOR.white)
+        self.board['f1'].piece = Bishop(COLOR.white)
+        self.board['g1'].piece = Knight(COLOR.white)
+        self.board['h1'].piece = Rook(COLOR.white)
 
-        self.board.grid.update_piece_positions()
+        self.board.update_piece_positions()
 
     def __str__(self):
         rows = []

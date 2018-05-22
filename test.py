@@ -24,8 +24,8 @@ def move(piece, position, capture=False, must_fail=False):
     # time.sleep(1)
 
 def test_pawn(game):
-    white_test_pawn = game.board.grid['a2'].piece
-    black_test_pawn = game.board.grid['b7'].piece
+    white_test_pawn = game.board['a2'].piece
+    black_test_pawn = game.board['b7'].piece
 
     move(white_test_pawn, 'a4') # move 2 forward
     move(white_test_pawn, 'a4', must_fail=True) # move 2 forward again
@@ -41,7 +41,7 @@ def test_pawn(game):
     print(black_test_pawn.moves)
     print(game.moves)
 
-    black_test_knight = game.board.grid['b8'].piece
+    black_test_knight = game.board['b8'].piece
     move(black_test_knight, 'c6')
     print(black_test_knight.moves)
     print(game.moves)
@@ -53,16 +53,16 @@ def test_pawn(game):
     assert isinstance(game.pieces[piece_id], Queen)
 
 def test_rook(game):
-    white_test_rook = game.board.grid['a1'].piece
+    white_test_rook = game.board['a1'].piece
     move(white_test_rook, 'a3')
     move(white_test_rook, 'b4', must_fail=True) # move diagonally
     move(white_test_rook, 'a7', capture=True)
     move(white_test_rook, 'b7')
 
 def test_bishop(game):
-    white_test_bishop = game.board.grid['c1'].piece
+    white_test_bishop = game.board['c1'].piece
     move(white_test_bishop, 'a3', must_fail=True) # move when there is a piece in the way
-    game.board.grid['b2'].piece = None # take the pawn out of the way
+    game.board['b2'].piece = None # take the pawn out of the way
     print(game)
     move(white_test_bishop, 'a3')
     move(white_test_bishop, 'a3', must_fail=True) # don't move the bishop
@@ -71,7 +71,7 @@ def test_bishop(game):
     move(white_test_bishop, 'c7', capture=True)
 
 def test_queen(game):
-    white_test_queen = game.board.grid['d1'].piece
+    white_test_queen = game.board['d1'].piece
     move(white_test_queen, 'd2', must_fail=True) # move when there is a piece in the way
     move(white_test_queen, 'c1')
     move(white_test_queen, 'a3')
@@ -81,7 +81,7 @@ def test_queen(game):
     move(white_test_queen, 'c6', capture=True)
 
 def test_king(game):
-    white_test_king = game.board.grid['e1'].piece
+    white_test_king = game.board['e1'].piece
     move(white_test_king, 'd2', must_fail=True) # move when there is a piece in the way
     move(white_test_king, 'd1')
     move(white_test_king, 'c1')
@@ -96,7 +96,7 @@ def test_king(game):
     move(white_test_king, 'd9', must_fail=True) # move out of bounds
 
 def test_knight(game):
-    white_test_knight = game.board.grid['b1'].piece
+    white_test_knight = game.board['b1'].piece
     move(white_test_knight, 'b3', must_fail=True) # move the knight 2 forward only
     move(white_test_knight, 'c3')
     move(white_test_knight, 'd5')
@@ -105,7 +105,7 @@ def test_knight(game):
     move(white_test_knight, 'e9', must_fail=True) # move the knight out of bounds
 
 def test_promoted_queen(game):
-    white_test_queen = game.board.grid['b8'].piece
+    white_test_queen = game.board['b8'].piece
     move(white_test_queen, 'a7')
     move(white_test_queen, 'b5', must_fail=True) # move the promoted queen like a knight
     move(white_test_queen, 'c5')

@@ -23,7 +23,7 @@ class Knight(Piece):
                 # the knight moves 2 vertically, then 1 horizontally
                 abs(rank_delta) == 2 and abs(file_delta) == 1
             ):
-            square = self.game.board.grid[position]
+            square = self.game.board[position]
             if square.piece:
                 if square.piece.color != self.color:
                     captured = square.piece

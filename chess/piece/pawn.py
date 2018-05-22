@@ -64,13 +64,13 @@ class Pawn(Piece):
             self.promoted_piece = piece
 
     def _check_capture(self, position):
-        square = self.game.board.grid[position]
+        square = self.game.board[position]
         if square.piece and square.piece.color != self.color:
             return square.piece
 
     def _check_en_passant(self, position):
         other_position = position[0] + self.position[1]
-        square = self.game.board.grid[other_position]
+        square = self.game.board[other_position]
         other_move = square.piece and square.piece.moves and square.piece.moves[0]
 
         if ( # pylint: disable=too-many-boolean-expressions
