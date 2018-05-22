@@ -1,1 +1,3 @@
 # chess
+
+![Screenshot](screenshot.png)
