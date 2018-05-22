@@ -45,12 +45,12 @@ class Chess(object):
     def add_player(self, player):
         """Add players to a game that hasn't started yet."""
         if self.started:
-            raise GameAlreadyStarted
+            raise GameAlreadyStarted('The game has already started')
         if not self.players[player.color]:
             player.game = self
             self.players[player.color] = player
         else:
-            raise PlayerExists
+            raise PlayerExists(f'There is already a player of the color {player.color}')
 
     def start(self):
         """If both of the players are present, the game can start."""
@@ -61,9 +61,9 @@ class Chess(object):
     def move(self, piece, position):
         """Check if it's the piece's turn to move and try to move the piece on the chessboard."""
         if not self.started:
-            raise GameNotStarted
+            raise GameNotStarted('You must start the game first')
         if not self.turn == piece.color:
-            raise NotYourTurn
+            raise NotYourTurn("Wait for your turn")
 
         old_position = piece.position
         # try to move the piece

@@ -21,7 +21,7 @@ def move(piece, position, capture=False, must_fail=False):
     else:
         assert not captured
     print(piece.game)
-    time.sleep(1)
+    # time.sleep(1)
 
 def test_pawn(game):
     white_test_pawn = game.board.grid['a2'].piece
@@ -113,6 +113,21 @@ def test_promoted_queen(game):
     move(white_test_queen, 'f7', capture=True)
     move(white_test_queen, 'f8', capture=True)
 
+def test_players(player1, player2):
+    player1.game.turn = player1.color
+    players = [player1, player2]
+
+    turn = 0
+    while True:
+        try:
+            player = players[turn]
+            player.move(*input(f'{player.color.name} move: ').split())
+            print(player.game)
+            turn = not turn
+        except Exception as e:
+            print(f'{e.__class__.__name__}: {e}')
+            continue
+
 def main():
     game = Chess()
     player1 = Player(COLOR.white)
@@ -128,6 +143,7 @@ def main():
     test_king(game)
     test_knight(game)
     test_promoted_queen(game)
+    test_players(player1, player2)
 
 if __name__ == '__main__':
     main()

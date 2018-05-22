@@ -9,6 +9,9 @@ class PlayerExists(Exception):
 class NotYourTurn(Exception):
     """Wait for your turn"""
 
+class NotYourPiece(Exception):
+    """You can only move pieces of your color"""
+
 class GameNotStarted(Exception):
     """Start the game first"""
 
