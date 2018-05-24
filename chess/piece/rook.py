@@ -13,7 +13,7 @@ class Rook(Piece):
             COLOR.black: '♜',
         }[COLOR.black] # black as in fill entire symbol
 
-    def move(self, position):
+    def move(self, position, commit=True):
         """Try to legally move the rook to `position` and return the piece it captures,
         if captures"""
         captured = None
@@ -27,6 +27,6 @@ class Rook(Piece):
         else:
             raise IllegalMove((self.position, position))
 
-        super().move(position)
+        super().move(position, commit=commit)
 
         return captured

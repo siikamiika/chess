@@ -13,13 +13,34 @@ class Piece(object):
         self.game = None   # init from Grid.update_piece_positions
         self.symbol = ' '
         self.moves = []
+        self.captured = False
         self.promoted_piece = None # pawn only
 
-    def move(self, position):
+    def move(self, position, commit=True):
         """Move the piece to the target position."""
-        move = (self.position, position, len(self.game.moves))
-        self.moves.append(move)
-        self.position = position
+        if self.game.results_in_check(self, position):
+            raise IllegalMove("You can't put your king in check")
+        if commit:
+            move = (self.position, position, len(self.game.moves))
+            self.moves.append(move)
+            self.position = position
+
+    def can_reach(self, position):
+        """If the piece can reach position, return True"""
+        try:
+            self.move(position, commit=False)
+            return True
+        except IllegalMove:
+            return False
+
+    def can_capture(self, position):
+        """If the piece can capture a piece at position, return True"""
+        return self.can_reach(position)
+
+    def can_move(self):
+        """Check if the piece can move at all"""
+        positions = [f + r for r in char_range('1', '8') for f in char_range('a', 'h')]
+        return any(self.can_reach(p) for p in positions)
 
     def get_starting_position(self):
         """Get the square where this piece started from."""

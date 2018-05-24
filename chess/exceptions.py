@@ -15,5 +15,8 @@ class NotYourPiece(Exception):
 class GameNotStarted(Exception):
     """Start the game first"""
 
+class GameOver(Exception):
+    """The game is over"""
+
 class GameAlreadyStarted(Exception):
     """An action requiring the game to be waiting was attempted after starting it"""

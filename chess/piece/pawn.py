@@ -1,6 +1,5 @@
 """Implementation for pawn"""
-from . import Piece
-from . import Queen
+from . import Piece, Queen
 from ..colors import COLOR
 from ..helpers import algdelta
 from ..exceptions import IllegalMove
@@ -14,7 +13,14 @@ class Pawn(Piece):
             COLOR.black: '♟',
         }[COLOR.black] # black as in fill entire symbol
 
-    def move(self, position):
+    def can_capture(self, position):
+        """Pawns can't capture everything they can move to, so this has to be overridden"""
+        file_delta, rank_delta = algdelta(self.position, position)
+        if abs(file_delta) == 1:
+            if rank_delta == 1 if self.color == COLOR.white else rank_delta == -1:
+                return True
+
+    def move(self, position, commit=True):
         """Try to legally move the pawn to `position` and return the piece it captures,
         if captures"""
         captured = None
@@ -48,8 +54,9 @@ class Pawn(Piece):
         else:
             raise IllegalMove((self.position, position))
 
-        super().move(position)
-        self._check_promotion(position)
+        super().move(position, commit=commit)
+        if commit:
+            self._check_promotion(position)
 
         return captured
 

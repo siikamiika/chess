@@ -13,7 +13,7 @@ class King(Piece):
             COLOR.black: '♚',
         }[COLOR.black] # black as in fill entire symbol
 
-    def move(self, position):
+    def move(self, position, commit=True):
         """Try to legally move the king to `position` and return the piece it captures,
         if captures"""
         captured = None
@@ -31,6 +31,6 @@ class King(Piece):
             raise IllegalMove((self.position, position))
         # TODO: castling
 
-        super().move(position)
+        super().move(position, commit=commit)
 
         return captured
