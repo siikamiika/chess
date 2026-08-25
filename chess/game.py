@@ -61,7 +61,7 @@ class Chess(object):
             self.started = True
             self.turn = COLOR.white
 
-    def move(self, piece, position):
+    def move(self, piece, position, promotion=None):
         """Check if it's the piece's turn to move and try to move the piece on the chessboard."""
         if self.over:
             raise GameOver('The game is already over')
@@ -72,7 +72,7 @@ class Chess(object):
 
         old_position = piece.position
         # try to move the piece
-        captured = self.board.move(piece, position)
+        captured = self.board.move(piece, position, promotion=promotion)
         # if a pawn reaches to the opposite edge, promote it
         if piece.promoted_piece:
             piece = piece.promoted_piece

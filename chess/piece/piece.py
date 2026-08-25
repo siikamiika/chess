@@ -16,7 +16,7 @@ class Piece(object):
         self.captured = False
         self.promoted_piece = None # pawn only
 
-    def move(self, position, commit=True):
+    def move(self, position, promotion=None, commit=True):
         """Move the piece to the target position."""
         if self.game.results_in_check(self, position):
             raise IllegalMove("You can't put your king in check")

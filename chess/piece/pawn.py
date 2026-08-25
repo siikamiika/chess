@@ -1,5 +1,5 @@
 """Implementation for pawn"""
-from . import Piece, Queen
+from . import Piece, Queen, Rook, Bishop, Knight
 from ..colors import COLOR
 from ..helpers import algdelta
 from ..exceptions import IllegalMove
@@ -20,7 +20,7 @@ class Pawn(Piece):
             if rank_delta == 1 if self.color == COLOR.white else rank_delta == -1:
                 return True
 
-    def move(self, position, commit=True):
+    def move(self, position, promotion=None, commit=True):
         """Try to legally move the pawn to `position` and return the piece it captures,
         if captures"""
         captured = None
@@ -56,14 +56,26 @@ class Pawn(Piece):
 
         super().move(position, commit=commit)
         if commit:
-            self._check_promotion(position)
+            self._check_promotion(position, promotion=promotion)
 
         return captured
 
-    def _check_promotion(self, position):
+    def _check_promotion(self, position, promotion=None):
         if position[1] == '8' if self.color == COLOR.white else position[1] == '1':
             # clone attributes
-            piece = Queen(self.color) # TODO: underpromotion
+            if promotion is None:
+                NewPiece = Queen
+            elif promotion.lower() == 'q':
+                NewPiece = Queen
+            elif promotion.lower() == 'r':
+                NewPiece = Rook
+            elif promotion.lower() == 'b':
+                NewPiece = Bishop
+            elif promotion.lower() == 'n':
+                NewPiece = Knight
+            else:
+                raise ValueError(f'Invalid promotion piece: {promotion}')
+            piece = NewPiece(self.color)
             piece.game = self.game
             piece.position = self.position
             piece.moves = self.moves

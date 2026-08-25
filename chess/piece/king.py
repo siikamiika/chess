@@ -97,7 +97,7 @@ class King(Piece):
 
         return captured
 
-    def move(self, position, commit=True):
+    def move(self, position, promotion=None, commit=True):
         """Try to legally move the king to `position` and return the piece it captures,
         if captures"""
         captured = None

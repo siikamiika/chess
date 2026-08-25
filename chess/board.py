@@ -10,7 +10,7 @@ class Board(object):
         self.game = game
         self.grid = Grid(game)
 
-    def move(self, piece, position):
+    def move(self, piece, position, promotion=None):
         """Check if the move is valid and move a piece to a position. If the
         position was already occupied by the opponent, return the captured piece."""
         if not is_position(position):
@@ -19,7 +19,7 @@ class Board(object):
         if target_square.piece and target_square.piece.color == piece.color:
             raise IllegalMove(f"{position} is already occupied by you")
 
-        captured = piece.move(position)
+        captured = piece.move(position, promotion=promotion)
         return captured
 
     def update_piece_positions(self):
