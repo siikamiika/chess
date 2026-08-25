@@ -40,7 +40,10 @@ class Piece(object):
     def can_move(self):
         """Check if the piece can move at all"""
         positions = [f + r for r in char_range('1', '8') for f in char_range('a', 'h')]
-        return any(self.can_reach(p) for p in positions)
+        try:
+            return any(self.can_reach(p) for p in positions)
+        except StopIteration:
+            breakpoint()
 
     def get_starting_position(self):
         """Get the square where this piece started from."""
