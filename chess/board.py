@@ -28,9 +28,11 @@ class Board(object):
 
     def __str__(self):
         highlight_squares = []
+        captured_squares = []
         if len(self.game.moves) > 0:
             last_move = self.game.moves[-1]
             highlight_squares = [last_move['move_from'], last_move['move_to']]
+            captured_squares = [last_move['move_to']] if last_move.get('captured') else []
         files_text = [f' {c} ' for c in chain(' ', char_range('a', 'h'), ' ')]
         files_text = ''.join(files_text)
         output_rows = [files_text]
@@ -38,8 +40,10 @@ class Board(object):
             row = [f' {rank} ']
             for file in char_range('a', 'h'):
                 square = self[f'{file}{rank}']
-                if f'{file}{rank}' in highlight_squares:
-                    row.append(f'{square.str_highlighted()}{RESET_STYLE}')
+                if f'{file}{rank}' in highlight_squares and f'{file}{rank}' not in captured_squares:
+                    row.append(f'{square.str_highlighted('\033[43m')}{RESET_STYLE}')
+                elif f'{file}{rank}' in captured_squares:
+                    row.append(f'{square.str_highlighted('\033[41m')}{RESET_STYLE}')
                 else:
                     row.append(f'{square}{RESET_STYLE}')
             row.append(f' {rank} ')
@@ -65,8 +69,8 @@ class Square(object):
         self.file = file
         self.piece = None
 
-    def str_highlighted(self):
-        return f'\033[43m {self.piece or " "} '
+    def str_highlighted(self, color):
+        return f'{color} {self.piece or " "} '
 
     def __str__(self):
         bgcolor = BG1 if self.rank % 2 == self.file % 2 else BG2
