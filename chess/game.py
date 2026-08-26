@@ -25,7 +25,7 @@ from .exceptions import (
     GameAlreadyStarted,
     GameOver,
 )
-from .helpers import char_range, rpad_ansi, algdelta
+from .helpers import char_range, rpad_ansi
 
 class Chess(object):
     """The game"""
@@ -198,51 +198,13 @@ class Chess(object):
 
     def _is_mate(self, color, threatening_pieces):
         """color's opponent has won"""
-        pieces = [p for p in self.pieces.values() if p.color == color and not p.captured]
-        king = next(p for p in pieces if isinstance(p, King))
-        if not king.can_move():
-            # if the check can be prevented by capturing the threatening piece
-            for threatening_piece in threatening_pieces:
-                for piece in pieces:
-                    if piece.can_capture(threatening_piece.position):
-                        return False
-            # if the check can be prevented by interposing a piece between the
-            # threatening piece and the king
-            for threatening_piece in [p for p in threatening_pieces
-                                      if not isinstance(p, (Knight, Pawn))]:
-                start, end = threatening_piece.position, king.position
-                file_delta, rank_delta = algdelta(start, end)
-                # diagonal
-                if abs(file_delta) == abs(rank_delta):
-
-                    intermediate_positions = zip(
-                        char_range(start[0], end[0]),
-                        char_range(start[1], end[1])
-                    )
-                    prev = ''.join(next(intermediate_positions)) # skip the starting position
-                # parallel
-                else:
-                    intermediate_positions = zip_longest(
-                        char_range(start[0], end[0]),
-                        char_range(start[1], end[1]),
-                        fillvalue=end[0 if start[0] == end[0] else 1]
-                    )
-                    prev = ''.join(next(intermediate_positions)) # skip the starting position
-                # all squares between the threatening piece and the king
-                positions = []
-                for pos in intermediate_positions:
-                    positions.append(prev)
-                    prev = ''.join(pos)
-                for position in positions:
-                    # check if the attacker and the king can be interposed
-                    for piece in pieces:
-                        if piece.can_reach(position):
-                            return False
+        if not self._can_move(color):
             self.over = True
             return True
+        return False
 
     def _can_move(self, color):
-        """If color can't move but isn't in check, the game ends in stalemate"""
+        """If color can't move but isn't in check, the game ends in stalemate. If in check, it ends in checkmate."""
         pieces = [p for p in self.pieces.values() if p.color == color and not p.captured]
         for piece in pieces:
             if piece.can_move():
