@@ -51,7 +51,7 @@ class Chess(object):
 
     @classmethod
     def from_file(cls, filename):
-        """Load moves from a file in algebraic notation."""
+        """Load moves from a file in newline-separated Stockfish UCI format."""
         with open(filename, 'r') as f:
             moves = [line.strip() for line in f.readlines()]
         game = cls()
