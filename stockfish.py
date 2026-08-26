@@ -54,6 +54,7 @@ class Stockfish:
         best_move_line = self._wait_for("bestmove")
 
         # Format: "bestmove e2e4 ponder e7e5"
+        print(best_move_line)  # Debugging output
         return best_move_line.split()[1]
 
     def close(self):
@@ -63,27 +64,39 @@ class Stockfish:
 
 
 def main():
-    game = Chess()
+    stockfish_path = sys.argv[1] if len(sys.argv) > 1 else "stockfish"
+    state_path = sys.argv[2] if len(sys.argv) > 2 else None
 
-    engine = Stockfish(sys.argv[1])
-
-    player1 = Player(COLOR.white)
-    player2 = Player(COLOR.black)
-
-    game.add_player(player1)
-    game.add_player(player2)
-
-    game.log_moves_to_file(f'stockfish_moves_{int(time.time())}.txt')
-
-    game.start()
-
-    engine.set_position()
     moves = []
+    if state_path:
+        game = Chess.from_file(state_path)
+        moves = list(map(lambda m: m['move_from'] + m['move_to'] + (m['promotion'] if m['promotion'] else ''), game.moves))
 
-    player1.game.turn = player1.color
+        player1 = game.players[COLOR.white]
+        player2 = game.players[COLOR.black]
+
+    else:
+        game = Chess()
+
+        player1 = Player(COLOR.white)
+        player2 = Player(COLOR.black)
+
+        game.add_player(player1)
+        game.add_player(player2)
+
+        game.log_moves_to_file(f'stockfish_moves_{int(time.time())}.txt')
+
+        game.start()
+
+        player1.game.turn = player1.color
+
+    engine = Stockfish(stockfish_path)
+    engine.set_position(moves)
+
+
     players = [player1, player2]
 
-    turn = 0
+    turn = len(moves) % 2 == 1
     while True:
         try:
             player = players[turn]

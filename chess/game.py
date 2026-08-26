@@ -149,6 +149,7 @@ class Chess(object):
         self.moves.append(dict(
             move_from=old_position,
             move_to=position,
+            promotion=promotion,
             piece=piece,
             move_id=len(self.moves),
             captured=captured,
