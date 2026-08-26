@@ -46,7 +46,6 @@ class Stockfish:
         best_move_line = self._wait_for("bestmove")
 
         # Format: "bestmove e2e4 ponder e7e5"
-        print(best_move_line)  # Debugging output
         return best_move_line.split()[1]
 
     def close(self):
