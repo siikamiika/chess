@@ -10,13 +10,17 @@ from chess.stockfish import Stockfish
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Stockfish vs Stockfish with short and random move times. Useful for testing")
+    parser = argparse.ArgumentParser(description="Play against Stockfish.")
     parser.add_argument("--stockfish_path", nargs="?", default="stockfish", help="Path to the Stockfish binary")
     parser.add_argument("--state_path", nargs="?", default=None, help="Path to the game state file")
+    parser.add_argument("--player_color", nargs="?", default="white", choices=["white", "black"], help="Color of the human player")
+    parser.add_argument("--time_ms", nargs="?", type=int, default=1000, help="Time in milliseconds for Stockfish to think")
     args = parser.parse_args()
 
     stockfish_path = args.stockfish_path
     state_path = args.state_path
+    player_color = COLOR.white if args.player_color == "white" else COLOR.black
+    time_ms = args.time_ms
 
     moves = []
     if state_path:
@@ -46,7 +50,10 @@ def main():
         try:
             player = game.players[game.turn]
             print(game)
-            move = engine.get_best_move(time_ms=random.randint(100, 500))
+            if player.color == player_color:
+                move = input("Your move: ")
+            else:
+                move = engine.get_best_move(time_ms=time_ms)
             player.move(*Chess.parse_move(move))
             moves.append(move)
             engine.set_position(moves)
