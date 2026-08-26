@@ -16,9 +16,9 @@ class Piece(object):
         self.captured = False
         self.promoted_piece = None # pawn only
 
-    def move(self, position, promotion=None, commit=True):
+    def move(self, position, promotion=None, commit=True, stop_recursion=False):
         """Move the piece to the target position."""
-        if self.game.results_in_check(self, position):
+        if not stop_recursion and self.game.results_in_check(self, position):
             raise IllegalMove("You can't put your king in check")
         if commit:
             move = (self.position, position, len(self.game.moves))
@@ -28,7 +28,7 @@ class Piece(object):
     def can_reach(self, position):
         """If the piece can reach position, return True"""
         try:
-            self.move(position, commit=False)
+            self.move(position, commit=False, stop_recursion=True)
             return True
         except IllegalMove:
             return False
@@ -40,10 +40,7 @@ class Piece(object):
     def can_move(self):
         """Check if the piece can move at all"""
         positions = [f + r for r in char_range('1', '8') for f in char_range('a', 'h')]
-        try:
-            return any(self.can_reach(p) for p in positions)
-        except StopIteration:
-            breakpoint()
+        return any(self.can_reach(p) for p in positions)
 
     def get_starting_position(self):
         """Get the square where this piece started from."""

@@ -97,7 +97,7 @@ class King(Piece):
 
         return captured
 
-    def move(self, position, promotion=None, commit=True):
+    def move(self, position, promotion=None, commit=True, stop_recursion=False):
         """Try to legally move the king to `position` and return the piece it captures,
         if captures"""
         captured = None
@@ -114,11 +114,9 @@ class King(Piece):
         # the king moves two squares along a rank (castling)
         elif abs(file_delta) == 2 and rank_delta == 0:
             captured = self._castle(position, commit=commit)
-            if captured:
-                raise IllegalMove((self.position, position))
         else:
             raise IllegalMove((self.position, position))
 
-        super().move(position, commit=commit)
+        super().move(position, commit=commit, stop_recursion=stop_recursion)
 
         return captured

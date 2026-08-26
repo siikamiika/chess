@@ -13,7 +13,7 @@ class Queen(Piece):
             COLOR.black: '♛',
         }[COLOR.black] # black as in fill entire symbol
 
-    def move(self, position, promotion=None, commit=True):
+    def move(self, position, promotion=None, commit=True, stop_recursion=False):
         """Try to legally move the queen to `position` and return the piece it captures,
         if captures"""
         captured = None
@@ -30,6 +30,6 @@ class Queen(Piece):
         else:
             raise IllegalMove((self.position, position))
 
-        super().move(position, commit=commit)
+        super().move(position, commit=commit, stop_recursion=stop_recursion)
 
         return captured

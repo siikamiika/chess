@@ -20,7 +20,7 @@ class Pawn(Piece):
             if rank_delta == 1 if self.color == COLOR.white else rank_delta == -1:
                 return True
 
-    def move(self, position, promotion=None, commit=True):
+    def move(self, position, promotion=None, commit=True, stop_recursion=False):
         """Try to legally move the pawn to `position` and return the piece it captures,
         if captures"""
         captured = None
@@ -54,7 +54,7 @@ class Pawn(Piece):
         else:
             raise IllegalMove((self.position, position))
 
-        super().move(position, commit=commit)
+        super().move(position, commit=commit, stop_recursion=stop_recursion)
         if commit:
             self._check_promotion(position, promotion=promotion)
 
