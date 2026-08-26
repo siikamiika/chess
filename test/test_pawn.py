@@ -67,8 +67,9 @@ def test_en_passant():
 
 def test_promotion():
     game = _get_game(['a2a4', 'h7h5', 'a4a5', 'b7b5', 'a5b6', 'c7c5', 'b6b7', 'b8c6'])
-    player = game.players[game.turn]
-    player.move(*Chess.parse_move('b7b8q'))
-    assert game.board['b8'].piece is not None
-    assert game.board['b8'].piece.color == COLOR.white
-    assert isinstance(game.board['b8'].piece, Queen)
+    game.players[game.turn].move(*Chess.parse_move('b7b8q'))
+    game.players[game.turn].move(*Chess.parse_move('a7a6'))
+    game.players[game.turn].move(*Chess.parse_move('b8c8'))
+    assert game.board['c8'].piece is not None
+    assert game.board['c8'].piece.color == COLOR.white
+    assert isinstance(game.board['c8'].piece, Queen)
