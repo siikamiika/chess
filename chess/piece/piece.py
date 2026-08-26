@@ -38,9 +38,15 @@ class Piece(object):
         return self.can_reach(position)
 
     def can_move(self):
-        """Check if the piece can move at all"""
+        """Check if the piece can legally move at all"""
         positions = [f + r for r in char_range('1', '8') for f in char_range('a', 'h')]
-        return any(self.can_reach(p) for p in positions)
+        for p in positions:
+            try:
+                self.move(p, commit=False, stop_recursion=False)
+                return True
+            except IllegalMove:
+                pass
+        return False
 
     def get_starting_position(self):
         """Get the square where this piece started from."""

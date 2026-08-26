@@ -213,13 +213,13 @@ class Chess(object):
                 start, end = threatening_piece.position, king.position
                 file_delta, rank_delta = algdelta(start, end)
                 # diagonal
-                if abs(file_delta) != abs(rank_delta):
+                if abs(file_delta) == abs(rank_delta):
 
                     intermediate_positions = zip(
                         char_range(start[0], end[0]),
                         char_range(start[1], end[1])
                     )
-                    prev = next(intermediate_positions) # skip the starting position
+                    prev = ''.join(next(intermediate_positions)) # skip the starting position
                 # parallel
                 else:
                     intermediate_positions = zip_longest(

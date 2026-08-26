@@ -107,12 +107,12 @@ def main():
             engine.set_position(moves)
             turn = not turn
         except GameOver as e:
+            print(player.game)
             print(f'{e.__class__.__name__}: {e}')
             break
         except Exception as e:
             print(f'{e.__class__.__name__}: {e}')
-            input('Press return to continue...')
-            continue
+            break
 
 
     engine.close()
