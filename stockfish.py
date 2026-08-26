@@ -88,26 +88,19 @@ def main():
 
         game.start()
 
-        player1.game.turn = player1.color
-
     engine = Stockfish(stockfish_path)
     engine.set_position(moves)
 
-
-    players = [player1, player2]
-
-    turn = len(moves) % 2 == 1
     while True:
         try:
-            player = players[turn]
-            print(player.game)
+            player = game.players[game.turn]
+            print(game)
             move = engine.get_best_move(time_ms=random.randint(100, 500))
             player.move(*Chess.parse_move(move))
             moves.append(move)
             engine.set_position(moves)
-            turn = not turn
         except GameOver as e:
-            print(player.game)
+            print(game)
             print(f'{e.__class__.__name__}: {e}')
             break
         except Exception as e:

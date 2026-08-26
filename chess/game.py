@@ -63,14 +63,9 @@ class Chess(object):
 
         game.start()
 
-        game.turn = player1.color
-        players = [player1, player2]
-
-        turn = 0
         for move in moves:
-            player = players[turn]
+            player = game.players[game.turn]
             player.move(*Chess.parse_move(move))
-            turn = not turn
 
         return game
 
