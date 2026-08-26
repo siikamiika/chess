@@ -1,5 +1,7 @@
 """The game of chess"""
 from itertools import zip_longest
+
+from chess.player import Player
 from .board import Board
 from .piece import (
     King,
@@ -45,6 +47,46 @@ class Chess(object):
         self.turn = None
         self.over = False
 
+        self.move_writer = None
+
+    @classmethod
+    def from_file(cls, filename):
+        """Load moves from a file in algebraic notation."""
+        with open(filename, 'r') as f:
+            moves = [line.strip() for line in f.readlines()]
+        game = cls()
+
+        player1 = Player(COLOR.white)
+        player2 = Player(COLOR.black)
+
+        game.add_player(player1)
+        game.add_player(player2)
+
+        game.start()
+
+        game.turn = player1.color
+        players = [player1, player2]
+
+        turn = 0
+        for move in moves:
+            player = players[turn]
+            player.move(*Chess.parse_move(move))
+            turn = not turn
+
+        return game
+
+    @staticmethod
+    def parse_move(move: str) -> tuple:
+        """Parses a move string in UCI format (e.g., 'e2e4') into a tuple of coordinates with optional promotion piece."""
+
+        start_square = move[:2]
+        end_square = move[2:4]
+        promotion = move[4:]
+        if promotion and promotion not in ['q', 'r', 'b', 'n']:
+            raise ValueError(f"Invalid promotion piece: {promotion}. Must be one of 'q', 'r', 'b', or 'n'.")
+
+        return start_square, end_square, promotion
+
     def add_player(self, player):
         """Add players to a game that hasn't started yet."""
         if self.started:
@@ -60,6 +102,10 @@ class Chess(object):
         if not self.started and self.players[COLOR.white] and self.players[COLOR.black]:
             self.started = True
             self.turn = COLOR.white
+
+    def log_moves_to_file(self, filename):
+        """Start writing moves to a file in algebraic notation. Each move is written in a new line."""
+        self.move_writer = open(filename, 'w')
 
     def move(self, piece, position, promotion=None):
         """Check if it's the piece's turn to move and try to move the piece on the chessboard."""
@@ -85,18 +131,21 @@ class Chess(object):
         # finally move the piece on the chessboard
         self.board[old_position].piece = None
         self.board[position].piece = piece
-        # the move was successful, add it to the game moves
-        self._log_move(old_position, position, piece, captured)
-        # change turn
-        self.turn = COLOR.white if self.turn == COLOR.black else COLOR.black
-        return captured
-
-    def _log_move(self, old_position, position, piece, captured):
+        # check if the move results in check or mate
         other_color = COLOR.black if piece.color == COLOR.white else COLOR.white
         threatening_pieces = self._is_check(other_color)
         mate = threatening_pieces and self._is_mate(other_color, threatening_pieces)
         stale = not threatening_pieces and not self._can_move(other_color)
+        self._log_move(old_position, position, promotion, piece, captured, threatening_pieces, mate, stale)
+        if mate:
+            raise GameOver(f'Game over. {piece.color.name.capitalize()} wins')
+        elif stale:
+            raise GameOver('Game over. Stalemate')
+        # change turn
+        self.turn = COLOR.white if self.turn == COLOR.black else COLOR.black
+        return captured
 
+    def _log_move(self, old_position, position, promotion, piece, captured, threatening_pieces, mate, stale):
         self.moves.append(dict(
             move_from=old_position,
             move_to=position,
@@ -107,11 +156,8 @@ class Chess(object):
             mate=mate,
             stale=stale,
         ))
-
-        if mate:
-            raise GameOver(f'Game over. {piece.color.name.capitalize()} wins')
-        elif stale:
-            raise GameOver('Game over. Stalemate')
+        if self.move_writer:
+            self.move_writer.write(f'{old_position}{position}{promotion if promotion else ""}\n')
 
     def results_in_check(self, piece, position):
         """Before letting the piece move be committed, check if it would result in check"""

@@ -1,6 +1,7 @@
 import subprocess
 import random
 import sys
+import time
 
 from chess import Chess, Player
 from chess.colors import COLOR
@@ -61,18 +62,6 @@ class Stockfish:
         self.process.terminate()
 
 
-def parse_move(move: str) -> tuple:
-    """Parses a move string in UCI format (e.g., 'e2e4') into a tuple of coordinates with optional promotion piece."""
-
-    start_square = move[:2]
-    end_square = move[2:4]
-    promotion = move[4:]
-    if promotion and promotion not in ['q', 'r', 'b', 'n']:
-        raise ValueError(f"Invalid promotion piece: {promotion}. Must be one of 'q', 'r', 'b', or 'n'.")
-
-    return start_square, end_square, promotion
-
-
 def main():
     game = Chess()
 
@@ -83,6 +72,8 @@ def main():
 
     game.add_player(player1)
     game.add_player(player2)
+
+    game.log_moves_to_file(f'stockfish_moves_{int(time.time())}.txt')
 
     game.start()
 
