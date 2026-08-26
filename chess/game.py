@@ -1,9 +1,8 @@
 """The game of chess"""
-from itertools import zip_longest
-
 from chess.player import Player
-from .board import Board
-from .piece import (
+from chess.board import Board
+from chess.piece import (
+    Piece,
     King,
     Queen,
     Rook,
@@ -11,21 +10,21 @@ from .piece import (
     Knight,
     Pawn,
 )
-from .colors import (
+from chess.colors import (
     COLOR,
     BG2,
     RESET_STYLE,
     FG_WHITE,
-    FG_BLACK
+    FG_BLACK,
 )
-from .exceptions import (
+from chess.exceptions import (
     PlayerExists,
     NotYourTurn,
     GameNotStarted,
     GameAlreadyStarted,
     GameOver,
 )
-from .helpers import char_range, rpad_ansi
+from chess.helpers import char_range, rpad_ansi
 
 class Chess(object):
     """The game"""
@@ -50,7 +49,7 @@ class Chess(object):
         self.move_writer = None
 
     @classmethod
-    def from_file(cls, filename):
+    def from_file(cls, filename: str) -> Chess:
         """Load moves from a file in newline-separated Stockfish UCI format."""
         with open(filename, 'r') as f:
             moves = [line.strip() for line in f.readlines()]
@@ -76,7 +75,7 @@ class Chess(object):
         return game
 
     @staticmethod
-    def parse_move(move: str) -> tuple:
+    def parse_move(move: str) -> tuple[str, str, str]:
         """Parses a move string in UCI format (e.g., 'e2e4') into a tuple of coordinates with optional promotion piece."""
 
         start_square = move[:2]
@@ -87,7 +86,7 @@ class Chess(object):
 
         return start_square, end_square, promotion
 
-    def add_player(self, player):
+    def add_player(self, player: Player) -> None:
         """Add players to a game that hasn't started yet."""
         if self.started:
             raise GameAlreadyStarted('The game has already started')
@@ -97,17 +96,17 @@ class Chess(object):
         else:
             raise PlayerExists(f'There is already a player of the color {player.color}')
 
-    def start(self):
+    def start(self) -> None:
         """If both of the players are present, the game can start."""
         if not self.started and self.players[COLOR.white] and self.players[COLOR.black]:
             self.started = True
             self.turn = COLOR.white
 
-    def log_moves_to_file(self, filename):
+    def log_moves_to_file(self, filename: str) -> None:
         """Start writing moves to a file in algebraic notation. Each move is written in a new line."""
         self.move_writer = open(filename, 'w')
 
-    def move(self, piece, position, promotion=None):
+    def move(self, piece: Piece, position: str, promotion: str | None = None) -> Piece | None:
         """Check if it's the piece's turn to move and try to move the piece on the chessboard."""
         if self.over:
             raise GameOver('The game is already over')

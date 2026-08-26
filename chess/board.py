@@ -1,8 +1,8 @@
 """A board where the game of chess is played"""
 from itertools import chain
-from .colors import BG1, BG2, RESET_STYLE
-from .helpers import alg2grid, grid2alg, char_range, is_position
-from .exceptions import IllegalMove
+from chess.colors import BG1, BG2, RESET_STYLE
+from chess.helpers import alg2grid, grid2alg, char_range, is_position
+from chess.exceptions import IllegalMove
 
 class Board(object):
     """The chessboard"""

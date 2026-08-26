@@ -1,5 +1,6 @@
 """Piece and terminal colors"""
 from enum import Enum
+
 import colorama
 
 COLOR = Enum('COLOR', ('white', 'black'))

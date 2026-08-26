@@ -1,12 +1,12 @@
 """The black and white pieces used in the game"""
 from itertools import zip_longest
-from ..colors import FG_WHITE, FG_BLACK, COLOR
-from ..helpers import is_position, char_range
-from ..exceptions import IllegalMove
+from chess.colors import FG_WHITE, FG_BLACK, COLOR
+from chess.helpers import is_position, char_range
+from chess.exceptions import IllegalMove
 
 class Piece(object):
     """A base piece"""
-    def __init__(self, color):
+    def __init__(self, color: COLOR) -> None:
         self.color = color
         self.piece_id = -1
         self.position = '' # init from Grid.update_piece_positions

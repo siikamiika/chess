@@ -1,8 +1,8 @@
 """Implementation for pawn"""
-from . import Piece, Queen, Rook, Bishop, Knight
-from ..colors import COLOR
-from ..helpers import algdelta
-from ..exceptions import IllegalMove
+from chess.piece import Piece, Queen, Rook, Bishop, Knight
+from chess.colors import COLOR
+from chess.helpers import algdelta
+from chess.exceptions import IllegalMove
 
 class Pawn(Piece):
     """A pawn of either color"""

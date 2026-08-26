@@ -1,12 +1,11 @@
 """Implementation for king"""
 from itertools import zip_longest
 
-from . import Piece
-from ..colors import COLOR
-from ..helpers import algdelta
-from ..exceptions import IllegalMove
-from .rook import Rook
-from ..helpers import char_range
+from chess.piece import Piece
+from chess.colors import COLOR
+from chess.helpers import algdelta, char_range
+from chess.exceptions import IllegalMove
+from chess.piece.rook import Rook
 
 class King(Piece):
     """A king of either color"""

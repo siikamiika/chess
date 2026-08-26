@@ -1,5 +1,5 @@
 """A chess player"""
-from .exceptions import NotYourPiece
+from chess.exceptions import NotYourPiece
 
 class Player(object):
     """The player"""

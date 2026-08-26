@@ -1,8 +1,8 @@
 """Implementation for knight"""
-from . import Piece
-from ..colors import COLOR
-from ..helpers import algdelta
-from ..exceptions import IllegalMove
+from chess.piece import Piece
+from chess.colors import COLOR
+from chess.helpers import algdelta
+from chess.exceptions import IllegalMove
 
 class Knight(Piece):
     """A knight of either color"""

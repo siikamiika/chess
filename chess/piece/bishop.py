@@ -1,12 +1,12 @@
 """Implementation for bishop"""
-from . import Piece
-from ..colors import COLOR
-from ..helpers import algdelta
-from ..exceptions import IllegalMove
+from chess.piece import Piece
+from chess.colors import COLOR
+from chess.helpers import algdelta
+from chess.exceptions import IllegalMove
 
 class Bishop(Piece):
     """A bishop of either color"""
-    def __init__(self, color):
+    def __init__(self, color: COLOR) -> None:
         super().__init__(color)
         self.symbol = {
             COLOR.white: '♗',
