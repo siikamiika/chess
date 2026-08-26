@@ -22,10 +22,6 @@ def main():
     if state_path:
         game = Chess.from_file(state_path)
         moves = list(map(lambda m: m['move_from'] + m['move_to'] + (m['promotion'] if m['promotion'] else ''), game.moves))
-
-        player1 = game.players[COLOR.white]
-        player2 = game.players[COLOR.black]
-
     else:
         game = Chess()
 
