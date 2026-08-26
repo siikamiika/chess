@@ -158,6 +158,7 @@ class Chess(object):
         ))
         if self.move_writer:
             self.move_writer.write(f'{old_position}{position}{promotion if promotion else ""}\n')
+            self.move_writer.flush()
 
     def results_in_check(self, piece, position):
         """Before letting the piece move be committed, check if it would result in check"""
