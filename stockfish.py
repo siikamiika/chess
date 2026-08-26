@@ -89,7 +89,7 @@ def main():
             player = players[turn]
             print(player.game)
             move = engine.get_best_move(time_ms=random.randint(100, 500))
-            player.move(*parse_move(move))
+            player.move(*Chess.parse_move(move))
             moves.append(move)
             engine.set_position(moves)
             turn = not turn
