@@ -155,6 +155,10 @@ class Chess(object):
             self.move_writer.write(f'{old_position}{position}{promotion if promotion else ""}\n')
             self.move_writer.flush()
 
+    def get_move_history(self):
+        """Return the move history as a list of strings in the UCI format."""
+        return list(map(lambda m: m['move_from'] + m['move_to'] + (m['promotion'] if m['promotion'] else ''), self.moves))
+
     def results_in_check(self, piece, position):
         """Before letting the piece move be committed, check if it would result in check"""
         # backup
