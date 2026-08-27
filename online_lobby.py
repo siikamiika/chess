@@ -51,11 +51,17 @@ class OnlineGame:
         self.game.start()
         self.broadcast_state()
 
+    def get_state(self):
+        out = [str(self.game)]
+        if self.game.turn:
+            player = self.game.players[self.game.turn]
+            out.append(f'{player.color.name} move: ')
+        return '\n'.join(out)
+
     def broadcast_state(self):
-        player = self.game.players[self.game.turn]
         for conn in self.connections:
             try:
-                conn.sendall((str(self.game) + "\n" + f'{player.color.name} move: ').encode('utf-8'))
+                conn.sendall((self.get_state()).encode('utf-8'))
             except Exception as e:
                 print(f"Error broadcasting to a connection: {e}")
 
@@ -103,14 +109,14 @@ class OnlineLobby:
             choice = data.decode().strip()
             if choice == "new":
                 with self.add_game_lock:
-                    game = self._create_game()
-                    self.games[game.game_id] = game
-                conn.sendall(f"Created new game with ID {game.game_id}\n".encode('utf-8'))
-                return game
+                    online_game = self._create_game()
+                    self.games[online_game.game_id] = online_game
+                conn.sendall(f"Created new game with ID {online_game.game_id}\n".encode('utf-8'))
+                return online_game
             elif choice.isdigit() and int(choice) in self.games:
-                game = self.games[int(choice)]
-                conn.sendall(f"Joined game with ID {game.game_id}\n".encode('utf-8'))
-                return game
+                online_game = self.games[int(choice)]
+                conn.sendall(f"Joined game with ID {online_game.game_id}\n".encode('utf-8'))
+                return online_game
             else:
                 conn.sendall("Invalid choice. Try again.\n".encode('utf-8'))
                 continue
@@ -143,6 +149,7 @@ class OnlineLobby:
                     if online_game.players[color].password != password:
                         conn.sendall("Incorrect password. Try again.\n".encode('utf-8'))
                         continue
+                    conn.sendall(online_game.get_state().encode('utf-8'))
                     return online_game.players[color]
             else:
                 conn.sendall("Invalid color choice. Try again.\n".encode('utf-8'))
