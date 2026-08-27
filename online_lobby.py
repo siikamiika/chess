@@ -19,8 +19,9 @@ class OnlinePlayer:
 
     def move(self, move):
         try:
-            self.player.move(*Chess.parse_move(move))
-            self.online_game.broadcast_state()
+            with self.online_game.move_lock:
+                self.player.move(*Chess.parse_move(move))
+                self.online_game.broadcast_state()
         except Exception as e:
             print(f"Error making move: {e}")
 
@@ -34,6 +35,7 @@ class OnlineGame:
             COLOR.black: None,
         }
         self.connections = []
+        self.move_lock = threading.Lock()
 
     def add_player(self, color, player_type, password):
         player = Player(color)
