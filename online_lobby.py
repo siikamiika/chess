@@ -65,7 +65,7 @@ class OnlineGame:
                 out.append('Game over. Stalemate.')
         elif self.game.turn:
             player = self.game.players[self.game.turn]
-            out.append(f'{player.color.name} move: ')
+            out.append(f'{player.color.name} move:\n')
         return '\n'.join(out)
 
     def broadcast_state(self):
@@ -74,6 +74,13 @@ class OnlineGame:
                 conn.sendall((self.get_state()).encode('utf-8'))
             except Exception as e:
                 print(f"Error broadcasting to a connection: {e}")
+
+    def broadcast_spectator_message(self, message):
+        for conn in self.connections:
+            try:
+                conn.sendall((message + '\n').encode('utf-8'))
+            except Exception as e:
+                print(f"Error broadcasting spectator message to a connection: {e}")
 
 
 class OnlineLobby:
@@ -99,7 +106,7 @@ class OnlineLobby:
             online_game = self._handle_join_game(conn)
             online_game.connections.append(conn)
             player = self._handle_color_choice(conn, online_game)
-            self._handle_client_loop(conn, player)
+            self._handle_client_loop(conn, addr, online_game, player)
         except Exception as e:
             print(f"Error handling client {addr}: {e}")
         finally:
@@ -133,7 +140,7 @@ class OnlineLobby:
 
     def _handle_color_choice(self, conn, online_game):
         while True:
-            conn.sendall(f"Choose color (white/black): ".encode('utf-8'))
+            conn.sendall(f"Choose color or spectate (white/black/spectate): ".encode('utf-8'))
             color_data = conn.recv(1024)
             if not color_data:
                 break
@@ -166,16 +173,22 @@ class OnlineLobby:
                         continue
                     conn.sendall(online_game.get_state().encode('utf-8'))
                     return online_game.players[color]
+            elif color_choice == "spectate":
+                conn.sendall(online_game.get_state().encode('utf-8'))
+                return None
             else:
                 conn.sendall("Invalid color choice. Try again.\n".encode('utf-8'))
                 continue
 
-    def _handle_client_loop(self, conn, player):
+    def _handle_client_loop(self, conn, addr, online_game, player):
         while True:
             data = conn.recv(1024)
             if not data:
                 break
-            player.move(data.decode('utf-8').strip())
+            if player:
+                player.move(data.decode('utf-8').strip())
+            else:
+                online_game.broadcast_spectator_message(f"[Spectator {addr[0]}:{addr[1]}]: {data.decode('utf-8').strip()}")
 
     def accept_connection(self):
         conn, addr = self.server_socket.accept()
