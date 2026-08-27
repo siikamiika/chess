@@ -12,8 +12,7 @@ PORT = 42069
 
 
 class OnlinePlayer:
-    def __init__(self, player, player_type, password, online_game):
-        self.player_type = player_type
+    def __init__(self, player, password, online_game):
         self.player = player
         self.password = password
         self.online_game = online_game
@@ -42,14 +41,14 @@ class OnlineGame:
         self.move_lock = threading.Lock()
         self.add_player_lock = threading.Lock()
 
-    def add_player(self, color, player_type, password):
+    def add_player(self, color, password):
         player = Player(color)
         self.game.add_player(player)
         if color == COLOR.white:
-            self.players[COLOR.white] = OnlinePlayer(player, player_type, password, self)
+            self.players[COLOR.white] = OnlinePlayer(player, password, self)
             return self.players[COLOR.white]
         elif color == COLOR.black:
-            self.players[COLOR.black] = OnlinePlayer(player, player_type, password, self)
+            self.players[COLOR.black] = OnlinePlayer(player, password, self)
             return self.players[COLOR.black]
 
     def start_game(self):
@@ -155,7 +154,7 @@ class OnlineLobby:
                     password = password_data.decode('utf-8').strip()
                     with online_game.add_player_lock:
                         try:
-                            online_player = online_game.add_player(color, "human", password)
+                            online_player = online_game.add_player(color, password)
                             if online_game.game.players[COLOR.white] is not None and online_game.game.players[COLOR.black] is not None:
                                 online_game.start_game()
                         except PlayerExists as e:
