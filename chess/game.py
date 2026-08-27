@@ -163,6 +163,12 @@ class Chess(object):
         """Return the move history as a list of strings in the UCI format."""
         return list(map(lambda m: m['move_from'] + m['move_to'] + (m['promotion'] if m['promotion'] else ''), self.moves))
 
+    def resign(self, color):
+        """Resign from the game."""
+        self.over = True
+        self.winner = COLOR.white if color == COLOR.black else COLOR.black
+        raise GameOver(f'Game over. {self.winner.name.capitalize()} wins')
+
     def results_in_check(self, piece, position):
         """Before letting the piece move be committed, check if it would result in check"""
         # backup

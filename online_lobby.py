@@ -28,6 +28,15 @@ class OnlinePlayer:
         except Exception as e:
             print(f"Error making move: {e}")
 
+    def resign(self):
+        try:
+            self.player.resign()
+        except GameOver as e:
+            print(f"Game over: {e}")
+            self.online_game.broadcast_state()
+        except Exception as e:
+            print(f"Error resigning: {e}")
+
 
 class OnlineGame:
     def __init__(self, game_id):
@@ -198,6 +207,7 @@ class OnlineLobby:
                 "/help - Show this help message\n"
                 "/msg <message> - Send a message to all players\n"
                 "/move_history - Show the move history\n"
+                "/resign - Resign from the game\n"
                 "Player only: plain <move> - Make a move in the game on your turn\n"
             ).encode('utf-8'))
         elif message.startswith('/msg '):
@@ -205,7 +215,10 @@ class OnlineLobby:
         elif message == '/move_history':
             conn.sendall(' '.join(online_game.get_move_history()).encode('utf-8') + b'\n')
         elif online_player:
-            online_player.move(message)
+            if message == '/resign':
+                online_player.resign()
+            else:
+                online_player.move(message)
 
     def accept_connection(self):
         conn, addr = self.server_socket.accept()

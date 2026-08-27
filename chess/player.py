@@ -16,3 +16,7 @@ class Player(object):
             self.game.move(piece, new_position, promotion=promotion)
         else:
             raise NotYourPiece(f"The piece at {old_position} isn't owned by you")
+
+    def resign(self):
+        """Resign from the game."""
+        self.game.resign(self.color)
