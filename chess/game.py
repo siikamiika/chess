@@ -45,6 +45,7 @@ class Chess(object):
         self.started = False
         self.turn = None
         self.over = False
+        self.winner = None
 
         self.move_writer = None
 
@@ -132,6 +133,7 @@ class Chess(object):
         stale = not threatening_pieces and not self._can_move(other_color)
         self._log_move(old_position, position, promotion, piece, captured, threatening_pieces, mate, stale)
         if mate:
+            self.winner = piece.color
             raise GameOver(f'Game over. {piece.color.name.capitalize()} wins')
         elif stale:
             raise GameOver('Game over. Stalemate')

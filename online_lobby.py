@@ -3,6 +3,7 @@ import argparse
 import threading
 
 from chess import Chess, Player
+from chess.exceptions import GameOver
 from chess.colors import COLOR
 
 
@@ -22,6 +23,9 @@ class OnlinePlayer:
             with self.online_game.move_lock:
                 self.player.move(*Chess.parse_move(move))
                 self.online_game.broadcast_state()
+        except GameOver as e:
+            print(f"Game over: {e}")
+            self.online_game.broadcast_state()
         except Exception as e:
             print(f"Error making move: {e}")
 
@@ -53,7 +57,12 @@ class OnlineGame:
 
     def get_state(self):
         out = [str(self.game)]
-        if self.game.turn:
+        if self.game.over:
+            if self.game.winner:
+                out.append(f'Game over. Winner: {self.game.winner.name}')
+            else:
+                out.append('Game over. Stalemate.')
+        elif self.game.turn:
             player = self.game.players[self.game.turn]
             out.append(f'{player.color.name} move: ')
         return '\n'.join(out)
