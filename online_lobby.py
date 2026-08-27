@@ -3,7 +3,7 @@ import argparse
 import threading
 
 from chess import Chess, Player
-from chess.exceptions import GameOver
+from chess.exceptions import GameOver, PlayerExists
 from chess.colors import COLOR
 
 
@@ -40,6 +40,7 @@ class OnlineGame:
         }
         self.connections = []
         self.move_lock = threading.Lock()
+        self.add_player_lock = threading.Lock()
 
     def add_player(self, color, player_type, password):
         player = Player(color)
@@ -145,9 +146,14 @@ class OnlineLobby:
                     if not password_data:
                         break
                     password = password_data.decode('utf-8').strip()
-                    player = online_game.add_player(color, "human", password)
-                    if online_game.game.players[COLOR.white] is not None and online_game.game.players[COLOR.black] is not None:
-                        online_game.start_game()
+                    with online_game.add_player_lock:
+                        try:
+                            player = online_game.add_player(color, "human", password)
+                            if online_game.game.players[COLOR.white] is not None and online_game.game.players[COLOR.black] is not None:
+                                online_game.start_game()
+                        except PlayerExists as e:
+                            conn.sendall(f"Error adding player: {e}\n".encode('utf-8'))
+                            continue
                     return player
                 else:
                     conn.sendall(f"{color_choice.capitalize()} player already exists. Enter password: \n".encode('utf-8'))
