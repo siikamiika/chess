@@ -184,13 +184,14 @@ class OnlineLobby:
             data = conn.recv(1024)
             if not data:
                 break
+            message = data.decode('utf-8').strip()
             if online_player:
-                if online_game.game.turn == online_player.player.color:
-                    online_player.move(data.decode('utf-8').strip())
+                if message.startswith('/msg '):
+                    online_game.broadcast_message(f"[{online_player.player.color.name}]: {message[5:]}")
                 else:
-                    online_game.broadcast_message(f"[{online_player.player.color.name}]: {data.decode('utf-8').strip()}")
+                    online_player.move(message)
             else:
-                online_game.broadcast_message(f"[Spectator {addr[0]}:{addr[1]}]: {data.decode('utf-8').strip()}")
+                online_game.broadcast_message(f"[Spectator {addr[0]}:{addr[1]}]: {message}")
 
     def accept_connection(self):
         conn, addr = self.server_socket.accept()
