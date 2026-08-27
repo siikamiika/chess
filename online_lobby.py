@@ -64,6 +64,7 @@ class OnlineLobby:
         self.port = port
         self.games = {}
         self.server_socket = None
+        self.add_game_lock = threading.Lock()
 
     def start_server(self):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -99,8 +100,9 @@ class OnlineLobby:
                 break
             choice = data.decode().strip()
             if choice == "new":
-                game = self._create_game()
-                self.games[game.game_id] = game
+                with self.add_game_lock:
+                    game = self._create_game()
+                    self.games[game.game_id] = game
                 conn.sendall(f"Created new game with ID {game.game_id}\n".encode('utf-8'))
                 return game
             elif choice.isdigit() and int(choice) in self.games:
