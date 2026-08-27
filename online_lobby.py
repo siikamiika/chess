@@ -75,12 +75,12 @@ class OnlineGame:
             except Exception as e:
                 print(f"Error broadcasting to a connection: {e}")
 
-    def broadcast_spectator_message(self, message):
+    def broadcast_message(self, message):
         for conn in self.connections:
             try:
                 conn.sendall((message + '\n').encode('utf-8'))
             except Exception as e:
-                print(f"Error broadcasting spectator message to a connection: {e}")
+                print(f"Error broadcasting message to a connection: {e}")
 
 
 class OnlineLobby:
@@ -105,8 +105,8 @@ class OnlineLobby:
         try:
             online_game = self._handle_join_game(conn)
             online_game.connections.append(conn)
-            player = self._handle_color_choice(conn, online_game)
-            self._handle_client_loop(conn, addr, online_game, player)
+            online_player = self._handle_color_choice(conn, online_game)
+            self._handle_client_loop(conn, addr, online_game, online_player)
         except Exception as e:
             print(f"Error handling client {addr}: {e}")
         finally:
@@ -155,13 +155,13 @@ class OnlineLobby:
                     password = password_data.decode('utf-8').strip()
                     with online_game.add_player_lock:
                         try:
-                            player = online_game.add_player(color, "human", password)
+                            online_player = online_game.add_player(color, "human", password)
                             if online_game.game.players[COLOR.white] is not None and online_game.game.players[COLOR.black] is not None:
                                 online_game.start_game()
                         except PlayerExists as e:
                             conn.sendall(f"Error adding player: {e}\n".encode('utf-8'))
                             continue
-                    return player
+                    return online_player
                 else:
                     conn.sendall(f"{color_choice.capitalize()} player already exists. Enter password: \n".encode('utf-8'))
                     password_data = conn.recv(1024)
@@ -180,15 +180,18 @@ class OnlineLobby:
                 conn.sendall("Invalid color choice. Try again.\n".encode('utf-8'))
                 continue
 
-    def _handle_client_loop(self, conn, addr, online_game, player):
+    def _handle_client_loop(self, conn, addr, online_game, online_player):
         while True:
             data = conn.recv(1024)
             if not data:
                 break
-            if player:
-                player.move(data.decode('utf-8').strip())
+            if online_player:
+                if online_game.game.turn == online_player.player.color:
+                    online_player.move(data.decode('utf-8').strip())
+                else:
+                    online_game.broadcast_message(f"[{online_player.player.color.name}]: {data.decode('utf-8').strip()}")
             else:
-                online_game.broadcast_spectator_message(f"[Spectator {addr[0]}:{addr[1]}]: {data.decode('utf-8').strip()}")
+                online_game.broadcast_message(f"[Spectator {addr[0]}:{addr[1]}]: {data.decode('utf-8').strip()}")
 
     def accept_connection(self):
         conn, addr = self.server_socket.accept()
