@@ -81,6 +81,9 @@ class OnlineGame:
             except Exception as e:
                 print(f"Error broadcasting message to a connection: {e}")
 
+    def get_move_history(self):
+        return self.game.get_move_history()
+
 
 class OnlineLobby:
     def __init__(self, host=HOST, port=PORT):
@@ -185,13 +188,24 @@ class OnlineLobby:
             if not data:
                 break
             message = data.decode('utf-8').strip()
-            if online_player:
-                if message.startswith('/msg '):
-                    online_game.broadcast_message(f"[{online_player.player.color.name}]: {message[5:]}")
-                else:
-                    online_player.move(message)
-            else:
-                online_game.broadcast_message(f"[Spectator {addr[0]}:{addr[1]}]: {message}")
+            self._handle_client_command(conn, addr, online_game, online_player, message)
+
+    def _handle_client_command(self, conn, addr, online_game, online_player, message):
+        name_tag = online_player.player.color.name if online_player else f"Spectator {addr[0]}:{addr[1]}"
+        if message == '/help':
+            conn.sendall((
+                "Available commands:\n"
+                "/help - Show this help message\n"
+                "/msg <message> - Send a message to all players\n"
+                "/move_history - Show the move history\n"
+                "Player only: plain <move> - Make a move in the game on your turn\n"
+            ).encode('utf-8'))
+        elif message.startswith('/msg '):
+            online_game.broadcast_message(f"[{name_tag}]: {message[5:]}")
+        elif message == '/move_history':
+            conn.sendall(' '.join(online_game.get_move_history()).encode('utf-8') + b'\n')
+        elif online_player:
+            online_player.move(message)
 
     def accept_connection(self):
         conn, addr = self.server_socket.accept()
