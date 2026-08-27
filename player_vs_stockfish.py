@@ -59,7 +59,8 @@ def main():
             break
         except Exception as e:
             print(f'{e.__class__.__name__}: {e}')
-            break
+            input('Press return to continue...')
+            continue
 
 
     engine.close()
