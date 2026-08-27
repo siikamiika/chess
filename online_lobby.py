@@ -57,9 +57,6 @@ class OnlineGame:
             except Exception as e:
                 print(f"Error broadcasting to a connection: {e}")
 
-    def _get_move_history(self):
-        return self.game.get_move_history()
-
 
 class OnlineLobby:
     def __init__(self, host=HOST, port=PORT):
